@@ -147,20 +147,46 @@ h1,h2,h3,p,li,label,span,div {{ color:{p['text']}; }}
 .metric {{ font-size:2rem; font-weight:800; line-height:1; font-variant-numeric:tabular-nums; }}
 .lad {{ display:flex; gap:.7rem; align-items:center; }}
 .av {{ width:44px; height:44px; flex:0 0 44px; border-radius:14px; display:grid; place-items:center; font-weight:800; color:#fff !important; }}
-.nick {{ min-height:2.6em; line-height:1.3; }}
+.pcard {{ height:190px; display:flex; flex-direction:column; padding:.95rem 1rem; margin-bottom:.55rem; box-sizing:border-box; }}
+.pcard .lad {{ align-items:flex-start; }}
+.pcard .who {{ min-width:0; flex:1; }}
+.pname {{ font-weight:780; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }}
+.nick {{ display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+  height:2.6em; line-height:1.3; font-size:.8rem !important; }}
+.pcount {{ display:flex; align-items:baseline; gap:.4rem; margin-top:auto; }}
+.phint {{ font-size:.76rem !important; height:1.3em; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:.2rem; }}
+.mcard {{ height:118px; margin-top:.4rem; box-sizing:border-box; display:flex; flex-direction:column; justify-content:space-between; }}
+.mcard .metric {{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }}
+.bcard {{ height:190px; margin-bottom:1rem; box-sizing:border-box; display:flex; flex-direction:column; }}
+.bcard .chips {{ margin-top:auto; display:flex; flex-wrap:wrap; gap:.35rem; }}
+.bcard .chip {{ margin:0; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }}
+.sec {{ margin:2rem 0 .8rem; }} .sec h2 {{ margin:0; padding:0; font-size:1.35rem; }} .sec p {{ margin:.2rem 0 0; }}
+.icons {{ font-size:.85rem; margin-top:.25rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }}
+.rname {{ font-weight:750; display:flex; align-items:center; gap:.35rem; white-space:nowrap; overflow:hidden; }}
+.rright {{ text-align:right; min-width:5.5rem; }}
+.stButton {{ margin-bottom:.1rem; }}
+.stButton > button {{ min-height:2.6rem; }}
+[data-testid="stHorizontalBlock"] {{ align-items:stretch; }}
+@media (max-width: 640px) {{
+  [data-testid="stHorizontalBlock"] {{ flex-wrap:wrap; gap:.6rem; }}
+  [data-testid="stHorizontalBlock"] > div[data-testid="column"], [data-testid="stHorizontalBlock"] > div[data-testid="stColumn"] {{
+    min-width:calc(50% - .3rem) !important; flex:1 1 calc(50% - .3rem) !important; }}
+  .hero {{ aspect-ratio:auto; min-height:240px; background-size:100% 100%, cover; }}
+}}
 .rank {{ font-weight:800; min-width:2.4rem; height:2.4rem; display:grid; place-items:center; border-radius:12px;
   background:{p['soft']}; color:{p['primary']} !important; }}
 .g {{ background:linear-gradient(140deg,#F5C542,#E39A16); color:#2A1D05 !important; }}
 .s {{ background:linear-gradient(140deg,#DDE3EA,#A9B4C0); color:#1B2027 !important; }}
 .b {{ background:linear-gradient(140deg,#E5AE7F,#B9743F); color:#2A1607 !important; }}
-.row {{ display:grid; grid-template-columns:2.6rem 1fr auto; gap:.8rem; align-items:center; padding:.65rem .3rem;
+.row:last-child {{ border-bottom:none; }}
+.row {{ display:grid; grid-template-columns:2.6rem minmax(0,1fr) auto; gap:1rem; align-items:center; padding:.8rem .4rem; min-height:76px; box-sizing:border-box;
   border-bottom:1px solid {p['border']}; animation: rise .4s both; }}
 .prog {{ height:10px; border-radius:999px; background:{p['soft']}; overflow:hidden; margin-top:.35rem; }}
 .prog > i {{ display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,{p['primary']},{p['accent']}); transition: width .6s; }}
 .chip {{ display:inline-flex; padding:.24rem .62rem; border-radius:999px; font-size:.76rem; font-weight:600;
   background:{p['soft']}; border:1px solid {p['border']}; margin:.4rem .3rem 0 0; }}
 ul.tl {{ list-style:none; margin:0; padding:0 0 0 1.15rem; border-left:2px dashed {p['border']}; }}
-ul.tl li {{ position:relative; padding:.45rem 0 .45rem .6rem; }}
+ul.tl li {{ position:relative; padding:.5rem 0 .5rem .7rem; display:flex; justify-content:space-between; gap:1rem; align-items:baseline; }}
 ul.tl li:before {{ content:""; position:absolute; left:-1.52rem; top:1rem; width:10px; height:10px; border-radius:50%;
   background:{p['primary']}; box-shadow:0 0 0 4px {p['soft']}; }}
 .stButton > button {{ border-radius:14px; border:1px solid {p['border']}; font-weight:650; width:100%;
@@ -210,8 +236,8 @@ def tracker() -> None:
         st.balloons()
         st.toast(party, icon="🎉")
 
-    st.markdown(f"<h2 style='margin:1.6rem 0 .2rem;font-size:1.35rem'>🍺 Log a pint</h2>"
-                f"<p class='muted'>Tap a name the moment a round lands. <span class='live'>Live · syncs every {REFRESH_SECONDS}s</span></p>",
+    st.markdown(f"<div class='sec'><h2>🍺 Log a pint</h2>"
+                f"<p class='muted'>Tap a name the moment a round lands. <span class='live'>Live · syncs every {REFRESH_SECONDS}s</span></p></div>",
                 unsafe_allow_html=True)
 
     cols = st.columns(len(LADS), gap="small")
@@ -220,10 +246,10 @@ def tracker() -> None:
         nb = next_badge(n)
         hint = f"{nb[0] - n} to {nb[1]} {nb[2]}" if nb else "Every badge unlocked. Legendary."
         with col:
-            st.markdown(f"""<div class="card"><div class="lad"><div class="av" style="background:{colour}">{name[0]}</div>
-<div style="min-width:0"><div style="font-weight:780">{esc(name)}</div><div class="muted nick">“{esc(nick)}”</div></div></div>
-<div style="display:flex;align-items:baseline;gap:.4rem;margin-top:.5rem"><span class="metric">{n}</span><span class="label">pints</span></div>
-<div class="muted" style="font-size:.76rem;min-height:2.4em">{esc(hint)}</div></div>""", unsafe_allow_html=True)
+            st.markdown(f"""<div class="card pcard" title="{esc(name)} · {esc(nick)}"><div class="lad"><div class="av" style="background:{colour}">{name[0]}</div>
+<div class="who"><div class="pname">{esc(name)}</div><div class="muted nick">“{esc(nick)}”</div></div></div>
+<div class="pcount"><span class="metric">{n}</span><span class="label">pints</span></div>
+<div class="muted phint" title="{esc(hint)}">{esc(hint)}</div></div>""", unsafe_allow_html=True)
             if st.button("+1 Pint", key=f"add_{key}", type="primary", use_container_width=True):
                 new_total = add_pint(key)
                 badge = next((b for b in BADGES if b[0] == new_total), None)
@@ -263,8 +289,8 @@ def tracker() -> None:
                ("Last round", last["at"][11:16] if last else "–", NAMES.get(last["who"], "") if last else "waiting"))
     mcols = st.columns(4, gap="small")
     for col, (label, value, cap) in zip(mcols, metrics):
-        col.markdown(f"<div class='card' style='margin-top:.8rem'><div class='label'>{label}</div>"
-                     f"<div class='metric' style='margin-top:.35rem'>{esc(value)}</div><div class='muted'>{esc(cap)}</div></div>",
+        col.markdown(f"<div class='card mcard'><div class='label'>{label}</div>"
+                     f"<div class='metric' title='{esc(value)}'>{esc(value)}</div><div class='muted'>{esc(cap)}</div></div>",
                      unsafe_allow_html=True)
 
     # League table
@@ -274,36 +300,36 @@ def tracker() -> None:
         n = totals[key]
         medal = ("g", "s", "b")[i - 1] if n and i <= 3 else ""
         mv = moves.get(key)
-        arrow = (f"<span style='color:#1E7A54;font-size:.72rem;font-weight:700;margin-left:.35rem'>▲ {mv}</span>" if mv and mv > 0
-                 else f"<span style='color:#C7512F;font-size:.72rem;font-weight:700;margin-left:.35rem'>▼ {-mv}</span>" if mv else "")
+        arrow = (f"<span style='color:#1E7A54;font-size:.72rem;font-weight:700;'>▲ {mv}</span>" if mv and mv > 0
+                 else f"<span style='color:#C7512F;font-size:.72rem;font-weight:700;'>▼ {-mv}</span>" if mv else "")
         icons = ("🍺" * min(n, 12) + (f" +{n - 12}" if n > 12 else "")) if n else "<span class='muted'>No pints yet — get a round in.</span>"
         rows.append(f"""<div class="row" role="row"><div class="rank {medal}" aria-label="Rank {i}">#{i}</div>
-<div style="min-width:0"><div style="font-weight:750">{esc(name)}{arrow}</div>
+<div style="min-width:0"><div class="rname">{esc(name)}{arrow}</div>
 <div class="prog" role="progressbar" aria-valuenow="{round(n / top * 100)}" aria-valuemin="0" aria-valuemax="100"><i style="width:{n / top * 100:.1f}%"></i></div>
-<div style="font-size:.85rem;margin-top:.2rem">{icons}</div></div>
-<div style="text-align:right"><div class="metric" style="font-size:1.6rem">{n}</div><div class="label">{round(progress(n) * 100)}% to next</div></div></div>""")
-    st.markdown("<h2 style='margin:1.6rem 0 .2rem;font-size:1.35rem'>🏆 Pint League</h2>"
-                "<p class='muted'>Live standings, shared by everyone on the tour.</p>"
+<div class="icons">{icons}</div></div>
+<div class="rright"><div class="metric" style="font-size:1.6rem">{n}</div><div class="label">{round(progress(n) * 100)}% to next</div></div></div>""")
+    st.markdown("<div class='sec'><h2>🏆 Pint League</h2>"
+                "<p class='muted'>Live standings, shared by everyone on the tour.</p></div>"
                 f"<div class='card' role='table' aria-label='Live league standings'>{''.join(rows)}</div>",
                 unsafe_allow_html=True)
 
     # Timeline
     items = "".join(f"<li><div style='font-weight:680'>{esc(NAMES.get(r['who'], r['who']))} · Pint</div>"
-                    f"<div class='muted'>{r['at'][11:16]}</div></li>" for r in recent)
-    st.markdown("<h2 style='margin:1.6rem 0 .2rem;font-size:1.35rem'>🕰️ Timeline of drinks</h2>"
-                "<p class='muted'>The last twenty rounds, newest first.</p>"
+                    f"<div class='muted' style='white-space:nowrap'>{r['at'][11:16]}</div></li>" for r in recent)
+    st.markdown("<div class='sec'><h2>🕰️ Timeline of drinks</h2>"
+                "<p class='muted'>The last twenty rounds, newest first.</p></div>"
                 f"<div class='card'>{f'<ul class=tl>{items}</ul>' if items else '<div class=muted>No drinks logged yet.</div>'}</div>",
                 unsafe_allow_html=True)
 
     # Achievements
-    st.markdown("<h2 style='margin:1.6rem 0 .2rem;font-size:1.35rem'>🎖️ Achievements</h2>"
-                "<p class='muted'>Every badge in the league and who holds it.</p>", unsafe_allow_html=True)
+    st.markdown("<div class='sec'><h2>🎖️ Achievements</h2>"
+                "<p class='muted'>Every badge in the league and who holds it.</p></div>", unsafe_allow_html=True)
     bcols = st.columns(3, gap="small")
     for idx, (t, emoji, label, desc) in enumerate(BADGES):
         who = ", ".join(NAMES[k] for k, *_ in standings if totals[k] >= t) or "Nobody yet"
-        bcols[idx % 3].markdown(f"<div class='card' style='margin-bottom:.8rem'><div style='font-size:1.7rem'>{emoji}</div>"
-                                f"<div style='font-weight:750;margin-top:.3rem'>{label}</div><div class='muted'>{desc}</div>"
-                                f"<span class='chip'>{t}+ pints</span><span class='chip' style='background:transparent'>{esc(who)}</span></div>",
+        bcols[idx % 3].markdown(f"<div class='card bcard'><div style='font-size:1.7rem;line-height:1.2'>{emoji}</div>"
+                                f"<div style='font-weight:750;margin-top:.35rem'>{label}</div><div class='muted' style='margin-top:.15rem'>{desc}</div>"
+                                f"<div class='chips'><span class='chip'>{t}+ pints</span><span class='chip' style='background:transparent' title='{esc(who)}'>{esc(who)}</span></div></div>",
                                 unsafe_allow_html=True)
 
 
